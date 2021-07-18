@@ -15,10 +15,12 @@ class UserManager(BaseUserManager):
         if email:
             email = self.normalize_email(email)
 
-            username = email
+            if not username:
+                username = email
 
             user = self.model(
                 email=email,
+                username=username,
                 **extra_fields
             )
 
@@ -44,9 +46,9 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
+        return self._create_user(username=username, email=email, password=password, **extra_fields)
 
     def create_superuser(self, username, password, **extra_fields):
         extra_fields.setdefault('is_superuser', True)
